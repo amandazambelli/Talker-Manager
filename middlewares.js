@@ -73,7 +73,7 @@ const validateTalk = (req, res, next) => {
 };
 
 const validateWatchedAt = (req, res, next) => {
-  const { watchedAt } = req.body;
+  const { talk: { watchedAt } } = req.body;
   if (!watchedAt || watchedAt === '') {
     console.log(watchedAt);
     return res.status(400).json({ message: 'O campo "watchedAt" é obrigatório' });
@@ -89,7 +89,7 @@ const validateWatchedAt = (req, res, next) => {
 };
 
 const validateRate = (req, res, next) => {
-  const { rate } = req.body;
+  const { rate } = req.body.talk;
   if (!rate || rate === '') {
     return res.status(400).json({ message: 'O campo "rate" é obrigatório' });
   }

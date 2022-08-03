@@ -26,9 +26,7 @@ router.get('/:id', async (req, res) => {
   res.status(200).json(talker);
 });
 
-router.use(validateToken);
-
-router.get('/search?q=searchTerm', async (req, res) => {
+router.get('/search?q=searchTerm', validateToken, async (req, res) => {
   const allTalkers = await readTalkers();
   const { queryName } = req.query;
 
@@ -43,7 +41,7 @@ router.get('/search?q=searchTerm', async (req, res) => {
   res.status(200).json(findQuery);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateToken, async (req, res) => {
   const allTalkers = await readTalkers();
   const { id } = req.params;
 
@@ -64,7 +62,7 @@ router.use(
   validateRate,
 );
 
-router.post('/', async (req, res) => {
+router.post('/', validateToken, async (req, res) => {
   const allTalkers = await readTalkers();
   const { name, age, talk: { watchedAt, rate } } = req.body;
 
@@ -81,10 +79,10 @@ router.post('/', async (req, res) => {
   allTalkers.push(newTalker);
 
   writeFile('./talker.json', allTalkers);
-  res.status(201).json({ message: 'Oi' });
+  res.status(201).json(newTalker);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', validateToken, async (req, res) => {
   const allTalkers = await readTalkers();
   const { id } = req.params;
   const { name, age, talk: { watchedAt, rate } } = req.body;
