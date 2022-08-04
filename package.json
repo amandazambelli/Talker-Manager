@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --runInBand --verbose --forceExit && npm run restore",
+    "test": "jest --runInBand --verbose --forceExit",
     "posttest": "cp tests/seed.json talker.json",
     "restore": "cp tests/seed.json talker.json",
     "start": "node index.js",
