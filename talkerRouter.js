@@ -21,7 +21,6 @@ router.get('/search', validateToken, async (req, res) => {
   }
 
   const findQuery = allTalkers.filter((person) => person.name.includes(q));
-  console.log(findQuery);
 
   if (!findQuery) {
     return res.status(200).json([]);
