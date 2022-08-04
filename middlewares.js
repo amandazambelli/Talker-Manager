@@ -82,7 +82,7 @@ const validateWatchedAt = (req, res, next) => {
   const validDate = /^\d{2}\/\d{2}\/\d{4}$/;
 
   if (!validDate.test(watchedAt)) {
-    return res.status(400).josn({ message: 'O campo "watchedAt" deve ter o formato "dd/mm/aaaa"' });
+    return res.status(400).json({ message: 'O campo "watchedAt" deve ter o formato "dd/mm/aaaa"' });
   }
   
   next();
@@ -90,11 +90,11 @@ const validateWatchedAt = (req, res, next) => {
 
 const validateRate = (req, res, next) => {
   const { rate } = req.body.talk;
-  if (!rate || rate === '') {
+  if (rate === undefined || rate === '') {
     return res.status(400).json({ message: 'O campo "rate" é obrigatório' });
   }
-  if (Number(rate) < 0 || Number(rate) > 5) {
-    return res.status(400).josn({ message: 'O campo "rate" deve ser um inteiro de 1 à 5' });
+  if (Number(rate) < 1 || Number(rate) > 5) {
+    return res.status(400).json({ message: 'O campo "rate" deve ser um inteiro de 1 à 5' });
   }
   
   next();

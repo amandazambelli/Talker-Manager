@@ -12,6 +12,23 @@ const {
 
 const router = express.Router();
 
+router.get('/search', validateToken, async (req, res) => {
+  const allTalkers = await readTalkers();
+  const { q } = req.query;
+
+  if (!q || q.length === 0) {
+    return res.status(200).json(allTalkers);
+  }
+
+  const findQuery = allTalkers.filter((person) => person.name.includes(q));
+  console.log(findQuery);
+
+  if (!findQuery) {
+    return res.status(200).json([]);
+  }
+  res.status(200).json(findQuery);
+});
+
 router.get('/', async (req, res) => {
   const allTalkers = await readTalkers();
   if (allTalkers.length === 0) return res.status(200).json([]);
@@ -26,21 +43,6 @@ router.get('/:id', async (req, res) => {
   res.status(200).json(talker);
 });
 
-router.get('/search?q=searchTerm', validateToken, async (req, res) => {
-  const allTalkers = await readTalkers();
-  const { queryName } = req.query;
-
-  const findQuery = allTalkers.filter((person) => person.name.includes(queryName));
-
-  if (findQuery === undefined) {
-    return res.status(200).json([]);
-  }
-  if (!findQuery || findQuery === '') {
-    return res.status(200).json(allTalkers);
-  }
-  res.status(200).json(findQuery);
-});
-
 router.delete('/:id', validateToken, async (req, res) => {
   const allTalkers = await readTalkers();
   const { id } = req.params;
@@ -50,11 +52,12 @@ router.delete('/:id', validateToken, async (req, res) => {
   if (talkerIndex === -1) return res.status(400).json({ message: 'Usuário não encontrado' });
   const deleteTalker = allTalkers.splice(talkerIndex, 1);
   
-  await writeFile('./talker.json', deleteTalker);
+  await writeFile(deleteTalker);
   res.status(204).end();
 });
 
 router.use(
+  validateToken,
   validateName,
   validateAge,
   validateTalk,
@@ -62,7 +65,7 @@ router.use(
   validateRate,
 );
 
-router.post('/', validateToken, async (req, res) => {
+router.post('/', async (req, res) => {
   const allTalkers = await readTalkers();
   const { name, age, talk: { watchedAt, rate } } = req.body;
 
@@ -78,22 +81,23 @@ router.post('/', validateToken, async (req, res) => {
 
   allTalkers.push(newTalker);
 
-  writeFile('./talker.json', allTalkers);
+  await writeFile(allTalkers);
   res.status(201).json(newTalker);
 });
 
-router.put('/:id', validateToken, async (req, res) => {
+router.put('/:id', async (req, res) => {
   const allTalkers = await readTalkers();
   const { id } = req.params;
   const { name, age, talk: { watchedAt, rate } } = req.body;
 
-  const talkerIndex = allTalkers.find((person) => person.id === Number(id));
+  const talkerIndex = allTalkers.findIndex((person) => person.id === Number(id));
 
   if (talkerIndex === -1) return res.status(400).json({ message: 'Usuário não encontrado' });
   allTalkers[talkerIndex] = { ...allTalkers[talkerIndex], name, age, talk: { watchedAt, rate } };
+  const editedTalker = allTalkers[talkerIndex];
 
-  await writeFile('./talker.json', allTalkers);
-  res.status(200).json(allTalkers);
+  await writeFile(allTalkers);
+  res.status(200).json(editedTalker);
 });
 
 module.exports = router;

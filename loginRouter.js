@@ -7,10 +7,8 @@ app.use(validateEmail, validatePassword);
 const generateToken = require('./generateToken');
 
 app.post('/', (req, res) => {
-  const { email, password } = req.body;
-  if (email && password) {
-      return res.status(200).json({ token: generateToken() });
-  }
+  const token = generateToken();
+  return res.status(200).json({ token });
 });
 
 module.exports = app;
